@@ -7,7 +7,6 @@ import os
 import socket
 import struct
 import time
-from importlib import import_module, util
 from typing import Any, Dict, Optional
 
 DEFAULT_PORT = 4433
@@ -19,16 +18,24 @@ class MissingAESCipher(ImportError):
 
 
 def _load_aes_cipher():
-    for module_name in ("Cryptodome.Cipher.AES", "Crypto.Cipher.AES"):
-        if util.find_spec(module_name) is not None:
-            module = import_module(module_name)
-            return module.AES
-    raise MissingAESCipher(
-        "AES cipher not available. Install pycryptodome or pycryptodomex:\n"
-        "  pip install pycryptodome\n"
-        "  # or\n"
-        "  pip install pycryptodomex"
-    )
+    cipher = None
+    try:
+        from Cryptodome.Cipher import AES as cipher  # pycryptodomex (Ubuntu/Debian)
+    except Exception:  # pragma: no cover
+        try:
+            from Crypto.Cipher import AES as cipher  # pycryptodome
+        except Exception:  # pragma: no cover
+            cipher = None
+
+    if cipher is None:
+        raise MissingAESCipher(
+            "AES cipher not available. Install pycryptodome or pycryptodomex:\n"
+            "  pip install pycryptodome\n"
+            "  # or\n"
+            "  pip install pycryptodomex"
+        )
+
+    return cipher
 
 
 AES = _load_aes_cipher()
