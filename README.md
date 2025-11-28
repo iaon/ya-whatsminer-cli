@@ -9,19 +9,24 @@
 ## 🇬🇧 English
 
 ### Overview
-`whatsminerctl.py` lets you execute any command from **Whatsminer API v3.0.1**.  
+`whatsminercli` lets you execute any command from **Whatsminer API v3.0.1**.
 It automatically generates `ts` + `token` for `set.*`, fetches `salt` when needed, and encrypts parameters for sensitive commands.
+The package also exposes a small Python API so you can call miners from your own scripts.
 
 - CLI flags for parameters (mutually exclusive):
   - `--param VALUE` → scalar value (int/float/bool/string)
   - `--param-json JSON` → structured parameter (object/array)
   - `--param-file FILE.json` → parameter from JSON file
 
-### Requirements
+### Installation
 Python 3.8+
 ```bash
+# Install from the repository root
+pip install .  # or: pip install -e . for editable mode
+
+# Default AES backend
 pip install pycryptodome
-# or
+# Alternative backend
 pip install pycryptodomex
 ```
 
@@ -35,9 +40,26 @@ pip install pycryptodomex
 }
 ```
 
-### Usage
+### CLI Usage
 ```bash
-python3 whatsminerctl.py [--config miner-conf.json] <subcommand> [options]
+whatsminercli [--config miner-conf.json] <subcommand> [options]
+# or
+python -m whatsminer_cli [--config miner-conf.json] <subcommand> [options]
+```
+
+### Library usage
+```python
+from whatsminer_cli import call_whatsminer, DEFAULT_PORT
+
+response = call_whatsminer(
+    host="192.168.1.2",
+    port=DEFAULT_PORT,
+    account="super",
+    account_password="passw0rd",
+    cmd="get.device.info",
+    param="miner",
+)
+print(response)
 ```
 
 #### Subcommands
@@ -54,37 +76,37 @@ python3 whatsminerctl.py [--config miner-conf.json] <subcommand> [options]
 
 ### Get miner salt
 ```bash
-python3 whatsminerctl.py --config miner-conf.json get-salt
+whatsminercli --config miner-conf.json get-salt
 ```
 
 ### Get device info
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call get.device.info --param miner
+whatsminercli --config miner-conf.json call get.device.info --param miner
 ```
 
 ### Miner power controls
 
 #### set.miner.power (absolute, Watts)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power --param 3200
+whatsminercli --config miner-conf.json call set.miner.power --param 3200
 # or: --param-json '{"power":3200}'
 ```
 
 #### set.miner.power_limit (Watts)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power_limit --param 3300
+whatsminercli --config miner-conf.json call set.miner.power_limit --param 3300
 # or: --param-json '{"limit":3300}'
 ```
 
 #### set.miner.power_mode (0=Normal, 1=LowPower, 2=Sleep)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power_mode --param 1
+whatsminercli --config miner-conf.json call set.miner.power_mode --param 1
 # or: --param-json '{"mode":1}'
 ```
 
 #### set.miner.power_percent (0–100%)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power_percent --param 85
+whatsminercli --config miner-conf.json call set.miner.power_percent --param 85
 # or: --param-json '{"percent":85}'
 ```
 
@@ -92,13 +114,13 @@ python3 whatsminerctl.py --config miner-conf.json call set.miner.power_percent -
 
 #### set.miner.fan_speed (0=auto, otherwise fixed RPM)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.fan_speed --param 4800
+whatsminercli --config miner-conf.json call set.miner.fan_speed --param 4800
 # or: --param-json '{"fan":4800}'
 ```
 
 #### set.miner.fan_auto (toggle if supported by firmware)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.fan_auto --param true
+whatsminercli --config miner-conf.json call set.miner.fan_auto --param true
 # or: --param-json '{"auto":true}'
 ```
 
@@ -106,13 +128,13 @@ python3 whatsminerctl.py --config miner-conf.json call set.miner.fan_auto --para
 
 #### set.miner.freq (MHz)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.freq --param 580
+whatsminercli --config miner-conf.json call set.miner.freq --param 580
 # or: --param-json '{"freq":580}'
 ```
 
 #### set.miner.boost (example enable/disable)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.boost --param false
+whatsminercli --config miner-conf.json call set.miner.boost --param false
 # or: --param-json '{"enable":false}'
 ```
 
@@ -120,7 +142,7 @@ python3 whatsminerctl.py --config miner-conf.json call set.miner.boost --param f
 
 #### set.miner.pools (encrypted, use file or JSON)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.pools --param-file pools.json
+whatsminercli --config miner-conf.json call set.miner.pools --param-file pools.json
 ```
 `pools.json`:
 ```json
@@ -134,14 +156,14 @@ python3 whatsminerctl.py --config miner-conf.json call set.miner.pools --param-f
 
 #### set.user.change_passwd (encrypted)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.user.change_passwd --param-json '{"old_pass":"passw0rd","new_pass":"new123"}'
+whatsminercli --config miner-conf.json call set.user.change_passwd --param-json '{"old_pass":"passw0rd","new_pass":"new123"}'
 ```
 
 ### System
 
 #### set.system.reboot
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.system.reboot
+whatsminercli --config miner-conf.json call set.system.reboot
 ```
 
 #### ⚠️ set.system.update_firmware — not implemented
@@ -167,7 +189,7 @@ Firmware update requires binary upload and chunked transfer. This CLI **does not
 
 
 ### Обзор
-`whatsminerctl.py` выполняет команды API Whatsminer v3.0.1.  
+`whatsminercli` выполняет команды API Whatsminer v3.0.1.
 Для `set.*` автоматически вычисляются `ts` и `token`, при необходимости утилита получает `salt`, а параметры некоторых команд шифрует AES-ECB.
 
 - флаги параметров (взаимоисключающие):
@@ -179,47 +201,47 @@ Firmware update requires binary upload and chunked transfer. This CLI **does not
 
 #### Получить salt
 ```bash
-python3 whatsminerctl.py --config miner-conf.json get-salt
+whatsminercli --config miner-conf.json get-salt
 ```
 
 #### Информация о устройстве
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call get.device.info --param miner
+whatsminercli --config miner-conf.json call get.device.info --param miner
 ```
 
 #### Управление мощностью
 ```bash
 # Абсолютная мощность (Вт)
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power --param 3200
+whatsminercli --config miner-conf.json call set.miner.power --param 3200
 
 # Лимит мощности (Вт)
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power_limit --param 3300
+whatsminercli --config miner-conf.json call set.miner.power_limit --param 3300
 
 # Режим мощности (0=Нормальный, 1=Энергосбережение, 2=Сон)
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power_mode --param 1
+whatsminercli --config miner-conf.json call set.miner.power_mode --param 1
 
 # Процент мощности (0–100%)
-python3 whatsminerctl.py --config miner-conf.json call set.miner.power_percent --param 85
+whatsminercli --config miner-conf.json call set.miner.power_percent --param 85
 ```
 
 #### Терморежим / Вентиляторы
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.fan_speed --param 4800
+whatsminercli --config miner-conf.json call set.miner.fan_speed --param 4800
 ```
 
 #### Частота (МГц)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.freq --param 580
+whatsminercli --config miner-conf.json call set.miner.freq --param 580
 ```
 
 #### Перезагрузка
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.system.reboot
+whatsminercli --config miner-conf.json call set.system.reboot
 ```
 
 #### Пулы (шифрование)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.miner.pools --param-file pools.json
+whatsminercli --config miner-conf.json call set.miner.pools --param-file pools.json
 ```
 
 `pools.json`:
@@ -234,7 +256,7 @@ python3 whatsminerctl.py --config miner-conf.json call set.miner.pools --param-f
 
 #### Смена пароля (шифрование)
 ```bash
-python3 whatsminerctl.py --config miner-conf.json call set.user.change_passwd --param-json '{"old_pass":"passw0rd","new_pass":"new123"}'
+whatsminercli --config miner-conf.json call set.user.change_passwd --param-json '{"old_pass":"passw0rd","new_pass":"new123"}'
 ```
 
 ### ⚠️ Обновление прошивки
