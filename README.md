@@ -62,6 +62,22 @@ response = call_whatsminer(
 print(response)
 ```
 
+### License
+This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+
+### Code of Conduct
+We follow the Python Community Code of Conduct. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+### Publishing to PyPI (checklist)
+- ✅ Package metadata in `pyproject.toml` (name, version, description, license, classifiers).
+- ✅ `README.md` as long description and rendered correctly on PyPI.
+- ✅ `LICENSE` and `CODE_OF_CONDUCT.md` included in the repository.
+- ✅ Ensure a unique project name on PyPI and bump the version for each release.
+- ✅ Build and verify the distribution: `python -m build` and `twine check dist/*`.
+- ✅ Upload to TestPyPI first: `python -m twine upload --repository testpypi dist/*`.
+- ✅ Then publish to PyPI: `python -m twine upload dist/*`.
+- ✅ Add `project.urls` (Homepage/Repository/Issues) for discoverability.
+
 #### Subcommands
 | Command | Description |
 |--------|-------------|
@@ -258,6 +274,22 @@ whatsminercli --config miner-conf.json call set.miner.pools --param-file pools.j
 ```bash
 whatsminercli --config miner-conf.json call set.user.change_passwd --param-json '{"old_pass":"passw0rd","new_pass":"new123"}'
 ```
+
+### Лицензия
+Проект распространяется по лицензии Apache License 2.0. См. [LICENSE](LICENSE).
+
+### Code of Conduct
+Мы используем Python Community Code of Conduct. См. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+### Публикация на PyPI (чек-лист)
+- ✅ Метаданные пакета в `pyproject.toml` (имя, версия, описание, лицензия, classifiers).
+- ✅ `README.md` как long description и корректное отображение на PyPI.
+- ✅ Файлы `LICENSE` и `CODE_OF_CONDUCT.md` добавлены в репозиторий.
+- ✅ Уникальное имя проекта на PyPI и повышение версии для каждого релиза.
+- ✅ Сборка и проверка дистрибутива: `python -m build` и `twine check dist/*`.
+- ✅ Сначала выгрузка в TestPyPI: `python -m twine upload --repository testpypi dist/*`.
+- ✅ Затем публикация в PyPI: `python -m twine upload dist/*`.
+- ✅ Заполнить `project.urls` (Homepage/Repository/Issues) для поиска и доверия.
 
 ### ⚠️ Обновление прошивки
 `set.system.update_firmware` не реализовано в данной версии CLI, т.к. требует передачи бинарного файла по частям.
